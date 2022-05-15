@@ -6,7 +6,7 @@ import (
 	"github.com/core-go/log"
 	mgo "github.com/core-go/mongo"
 	"github.com/core-go/search"
-	"github.com/core-go/search/mongo"
+	mq "github.com/core-go/search/mongo"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"reflect"
@@ -29,7 +29,7 @@ func NewApp(ctx context.Context, conf Config) (*ApplicationContext, error) {
 	logError := log.ErrorMsg
 
 	userType := reflect.TypeOf(User{})
-	userQuery := query.UseQuery(userType)
+	userQuery := mq.UseQuery(userType)
 	userSearchBuilder := mgo.NewSearchBuilder(db, "users", userQuery, search.GetSort)
 	userRepository := NewUserRepository(db)
 	userService := NewUserService(userRepository)
