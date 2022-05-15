@@ -10,7 +10,8 @@ go run main.go
 ![Architecture](https://camo.githubusercontent.com/c17d4dfaab39cf7223f7775c9e973bb936e4169e8bd0011659e83cec755c8f26/68747470733a2f2f63646e2d696d616765732d312e6d656469756d2e636f6d2f6d61782f3830302f312a42526b437272622d5f417637395167737142556b48672e706e67)
 
 ### Architecture with standard features: config, health check, logging, middleware log tracing
-![Architecture with standard features: config, health check, logging, middleware log tracing](https://camo.githubusercontent.com/bd77867d332213b6d54d80b19f46c3dd0f1b8e0b9bb155f8ff502d9fc3bdcded/68747470733a2f2f63646e2d696d616765732d312e6d656469756d2e636f6d2f6d61782f3830302f312a476d306479704c7559615077474d38557a727a5637772e706e67)
+![Architecture with standard features: config, health check, logging, middleware log tracing](https://camo.githubusercontent.com/fa1158e7f94bf96e09aef42fcead23366839baf71190133d5df10f3006b2e041/68747470733a2f2f63646e2d696d616765732d312e6d656469756d2e636f6d2f6d61782f3830302f312a6d494e3344556569365676316c755a376747727655412e706e67)
+
 #### [core-go/search](https://github.com/core-go/search)
 - Build the search model at http handler
 - Build dynamic SQL for search
@@ -136,9 +137,46 @@ GET /users/wolverine
     "dateOfBirth": "1974-11-16T16:59:59.999Z"
 }
 ```
-#### *Response:* 1: success, 0: duplicate key, -1: error
+#### *Response:*
+- status: configurable; 1: success, 0: duplicate key, 4: error
 ```json
-1
+{
+    "status": 1,
+    "value": {
+        "id": "wolverine",
+        "username": "james.howlett",
+        "email": "james.howlett@gmail.com",
+        "phone": "0987654321",
+        "dateOfBirth": "1974-11-16T00:00:00+07:00"
+    }
+}
+```
+#### *Fail case sample:* 
+- Request:
+```json
+{
+    "id": "wolverine",
+    "username": "james.howlett",
+    "email": "james.howlett",
+    "phone": "0987654321a",
+    "dateOfBirth": "1974-11-16T16:59:59.999Z"
+}
+```
+- Response: in this below sample, email and phone are not valid
+```json
+{
+    "status": 4,
+    "errors": [
+        {
+            "field": "email",
+            "code": "email"
+        },
+        {
+            "field": "phone",
+            "code": "phone"
+        }
+    ]
+}
 ```
 
 ### Update one user by id
@@ -154,9 +192,19 @@ PUT /users/wolverine
     "dateOfBirth": "1974-11-16T16:59:59.999Z"
 }
 ```
-#### *Response:* 1: success, 0: not found, -1: error
+#### *Response:*
+- status: configurable; 1: success, 0: duplicate key, 2: version error, 4: error
 ```json
-1
+{
+    "status": 1,
+    "value": {
+        "id": "wolverine",
+        "username": "james.howlett",
+        "email": "james.howlett@gmail.com",
+        "phone": "0987654321",
+        "dateOfBirth": "1974-11-16T00:00:00+07:00"
+    }
+}
 ```
 
 ### Patch one user by id
@@ -171,9 +219,16 @@ PATCH /users/wolverine
     "phone": "0987654321"
 }
 ```
-#### *Response:* 1: success, 0: not found, -1: error
+#### *Response:*
+- status: configurable; 1: success, 0: duplicate key, 2: version error, 4: error
 ```json
-1
+{
+    "status": 1,
+    "value": {
+        "email": "james.howlett@gmail.com",
+        "phone": "0987654321"
+    }
+}
 ```
 
 #### Problems for patch

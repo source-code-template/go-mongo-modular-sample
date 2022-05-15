@@ -12,4 +12,6 @@ type Config struct {
 	Mongo      mongo.MongoConfig `mapstructure:"mongo"`
 	Log        log.Config        `mapstructure:"log"`
 	MiddleWare mid.LogConfig     `mapstructure:"middleware"`
+	Status     *sv.StatusConfig  `mapstructure:"status"`
+	Action     *sv.ActionConfig  `mapstructure:"action"`
 }

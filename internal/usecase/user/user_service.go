@@ -2,10 +2,10 @@ package user
 
 import (
 	"context"
+	sv "github.com/core-go/service"
 )
 
 type UserService interface {
-	All(ctx context.Context) (*[]User, error)
 	Load(ctx context.Context, id string) (*User, error)
 	Create(ctx context.Context, user *User) (int64, error)
 	Update(ctx context.Context, user *User) (int64, error)
@@ -13,22 +13,25 @@ type UserService interface {
 	Delete(ctx context.Context, id string) (int64, error)
 }
 
-func NewUserService(repository UserRepository) UserService {
+func NewUserService(repository sv.Repository) UserService {
 	return &userService{repository: repository}
 }
 
 type userService struct {
-	repository UserRepository
+	repository sv.Repository
 }
 
-func (s *userService) All(ctx context.Context) (*[]User, error) {
-	return s.repository.All(ctx)
-}
 func (s *userService) Load(ctx context.Context, id string) (*User, error) {
-	return s.repository.Load(ctx, id)
+	var user User
+	ok, err := s.repository.LoadAndDecode(ctx, id, &user)
+	if !ok {
+		return nil, err
+	} else {
+		return &user, err
+	}
 }
 func (s *userService) Create(ctx context.Context, user *User) (int64, error) {
-	return s.repository.Create(ctx, user)
+	return s.repository.Insert(ctx, user)
 }
 func (s *userService) Update(ctx context.Context, user *User) (int64, error) {
 	return s.repository.Update(ctx, user)
