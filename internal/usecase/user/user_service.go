@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	sv "github.com/core-go/service"
+	. "github.com/core-go/core"
 )
 
 type UserService interface {
@@ -13,12 +13,12 @@ type UserService interface {
 	Delete(ctx context.Context, id string) (int64, error)
 }
 
-func NewUserService(repository sv.Repository) UserService {
+func NewUserService(repository Repository) UserService {
 	return &userService{repository: repository}
 }
 
 type userService struct {
-	repository sv.Repository
+	repository Repository
 }
 
 func (s *userService) Load(ctx context.Context, id string) (*User, error) {
