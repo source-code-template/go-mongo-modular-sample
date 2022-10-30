@@ -11,12 +11,12 @@ import (
 	query "github.com/core-go/search/mongo"
 	"reflect"
 
-	. "go-service/internal/usecase/user"
+	"go-service/internal/user"
 )
 
 type ApplicationContext struct {
 	Health *health.Handler
-	User   UserHandler
+	User   user.UserHandler
 }
 
 func NewApp(ctx context.Context, conf Config) (*ApplicationContext, error) {
@@ -29,12 +29,12 @@ func NewApp(ctx context.Context, conf Config) (*ApplicationContext, error) {
 	action := core.InitializeAction(conf.Action)
 	validator := v.NewValidator()
 
-	userType := reflect.TypeOf(User{})
+	userType := reflect.TypeOf(user.User{})
 	userQuery := query.UseQuery(userType)
 	userSearchBuilder := mongo.NewSearchBuilder(db, "users", userQuery, search.GetSort)
 	userRepository := mongo.NewRepository(db, "users", userType)
-	userService := NewUserService(userRepository)
-	userHandler := NewUserHandler(userSearchBuilder.Search, userService, status, logError, validator.Validate, &action)
+	userService := user.NewUserService(userRepository)
+	userHandler := user.NewUserHandler(userSearchBuilder.Search, userService, status, logError, validator.Validate, &action)
 
 	mongoChecker := mongo.NewHealthChecker(db)
 	healthHandler := health.NewHandler(mongoChecker)
